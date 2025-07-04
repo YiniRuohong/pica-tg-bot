@@ -1,5 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import os from 'node:os'
+import axios from 'axios'
 import Telegraph from 'telegraph-node'
 import { uploadByBuffer } from 'telegraph-uploader'
 import mime from 'mime'
@@ -38,15 +40,35 @@ export async function getToken() {
     return token
 }
 
+async function downloadTemp(url: string) {
+    const res = await axios.get<ArrayBuffer>(url, {
+        responseType: 'arraybuffer'
+    })
+    const ext = path.extname(new URL(url).pathname) || '.img'
+    const tmp = path.join(os.tmpdir(), `${Date.now()}${ext}`)
+    fs.writeFileSync(tmp, Buffer.from(res.data))
+    return tmp
+}
+
+async function uploadSrc(src: string) {
+    let local = src
+    if (/^https?:/.test(src)) {
+        local = await downloadTemp(src)
+    }
+    const buf = fs.readFileSync(local)
+    const type = mime.getType(local) || 'application/octet-stream'
+    const res = await uploadByBuffer(buf, type)
+    if (local !== src) fs.unlinkSync(local)
+    return res.link
+}
+
 async function uploadImages(imgDir: string) {
     const files = fs.readdirSync(imgDir).sort()
     const links: string[] = []
     for (const file of files) {
         const filePath = path.join(imgDir, file)
-        const buf = fs.readFileSync(filePath)
-        const type = mime.getType(filePath) || 'application/octet-stream'
-        const res = await uploadByBuffer(buf, type)
-        links.push(res.link)
+        const link = await uploadSrc(filePath)
+        links.push(link)
     }
     return links
 }
