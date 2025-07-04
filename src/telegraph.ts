@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import Telegraph from 'telegraph-node'
 import { uploadByBuffer } from 'telegraph-uploader'
+import mime from 'mime'
 import { resolvePath } from './utils'
 
 interface TelegraphClient {
@@ -41,8 +42,10 @@ async function uploadImages(imgDir: string) {
     const files = fs.readdirSync(imgDir).sort()
     const links: string[] = []
     for (const file of files) {
-        const buf = fs.readFileSync(path.join(imgDir, file))
-        const res = await uploadByBuffer(buf, 'image/jpeg')
+        const filePath = path.join(imgDir, file)
+        const buf = fs.readFileSync(filePath)
+        const type = mime.getType(filePath) || 'application/octet-stream'
+        const res = await uploadByBuffer(buf, type)
         links.push(res.link)
     }
     return links
