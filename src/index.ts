@@ -248,6 +248,11 @@ async function main() {
             log.success(`Telegraph 链接: ${link}`)
         } catch (err) {
             log.warn('Telegraph 上传失败')
+            if (err instanceof Error) {
+                log.error(err.message)
+            } else {
+                log.error(String(err))
+            }
         }
     }
 }
