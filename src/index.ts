@@ -18,6 +18,7 @@ import { Comic } from './types'
 import pLimit from 'p-limit'
 import pico from 'picocolors'
 import Table from 'cli-table3'
+import { uploadComic } from './telegraph'
 
 loadEnv()
 
@@ -242,6 +243,12 @@ async function main() {
         }
 
         log.success(`${title} 下载完成`)
+        try {
+            const link = await uploadComic(title)
+            log.success(`Telegraph 链接: ${link}`)
+        } catch (err) {
+            log.warn('Telegraph 上传失败')
+        }
     }
 }
 

@@ -80,9 +80,21 @@ PICA_DL_CONTENT=
 PICA_DL_SEARCH_KEYWORDS=
 ```
 
+若要在下载完成后将漫画发布到 Telegra.ph，请额外设置：
+
+```bash
+# Telegraph 访问令牌，可通过运行程序时自动创建并保存
+TELEGRAPH_TOKEN=
+```
+
+若未设置 `TELEGRAPH_TOKEN`，程序会在首次上传时自动创建 Telegraph 账号并把
+token 保存到项目根目录的 `.telegraph_token` 文件，下次运行可直接复用。
+
 ```bash
 # 运行
 pica-cli
+
+下载完成后，程序会自动将整部漫画上传至 Telegra.ph，并在终端输出访问链接。
 
 # 漫画打压缩包
 pica-zip
