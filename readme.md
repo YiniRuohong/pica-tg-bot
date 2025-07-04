@@ -96,6 +96,8 @@ pica-cli
 
 下载完成后，程序会自动将整部漫画上传至 Telegra.ph，并在终端输出访问链接。
 
+若上传失败，错误信息会记录到 `telegraph_error.log`。
+
 # 漫画打压缩包
 pica-zip
 ```

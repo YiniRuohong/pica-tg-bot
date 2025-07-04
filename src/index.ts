@@ -6,7 +6,8 @@ import {
     filterEpisodes,
     filterPictures,
     isValidComicId,
-    selectChapterByInput
+    selectChapterByInput,
+    appendFileLog
 } from './utils'
 import ora from 'ora'
 import Input from '@inquirer/input'
@@ -248,11 +249,9 @@ async function main() {
             log.success(`Telegraph 链接: ${link}`)
         } catch (err) {
             log.warn('Telegraph 上传失败')
-            if (err instanceof Error) {
-                log.error(err.message)
-            } else {
-                log.error(String(err))
-            }
+            const msg = err instanceof Error ? err.message : String(err)
+            log.error(msg)
+            appendFileLog('telegraph_error.log', msg)
         }
     }
 }
