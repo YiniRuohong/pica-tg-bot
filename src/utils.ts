@@ -134,6 +134,12 @@ export const log = {
         console.log(pico.green(`${figures.tick} ${msg.join(' ')}`))
 }
 
+export function appendFileLog(file: string, message: string) {
+    const logPath = resolvePath(file)
+    const prefix = new Date().toISOString()
+    fs.appendFileSync(logPath, `${prefix} ${message}\n`, 'utf8')
+}
+
 export function sleep(s: number) {
     return new Promise((r) => setTimeout(r, s * 1000))
 }

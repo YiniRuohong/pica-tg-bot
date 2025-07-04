@@ -6,7 +6,8 @@ import {
     filterEpisodes,
     filterPictures,
     isValidComicId,
-    selectChapterByInput
+    selectChapterByInput,
+    appendFileLog
 } from './utils'
 import ora from 'ora'
 import Input from '@inquirer/input'
@@ -18,6 +19,7 @@ import { Comic } from './types'
 import pLimit from 'p-limit'
 import pico from 'picocolors'
 import Table from 'cli-table3'
+import { uploadComic } from './telegraph'
 
 loadEnv()
 
@@ -242,6 +244,15 @@ async function main() {
         }
 
         log.success(`${title} 下载完成`)
+        try {
+            const link = await uploadComic(title)
+            log.success(`Telegraph 链接: ${link}`)
+        } catch (err) {
+            log.warn('Telegraph 上传失败')
+            const msg = err instanceof Error ? err.message : String(err)
+            log.error(msg)
+            appendFileLog('telegraph_error.log', msg)
+        }
     }
 }
 
